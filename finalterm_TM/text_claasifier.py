@@ -27,15 +27,18 @@ class PreProcessor(object):
         result = []
         if isinstance(corpus, list):
             self.corpus = corpus
+        elif isinstance(corpus,str):
+            self.corpus = [corpus]
         else:
             self.corpus = [d for d in corpus]
 
         for step in self.step:
             if isinstance(step[1], object):
-                for docs in corpus:
+                for docs in self.corpus:
                     result.append(step[1](docs))
             else:
                 print(f'check step: {step[0]}')
+        return result
 
 class TokenizerEN(object):
 
@@ -48,13 +51,21 @@ corpus = pd.read_csv('/Users/george/testData/seoul_city_complaints_2019_2021.csv
 print(corpus['ask'][150])
 print('-'*30)
 tt = textReader(file_path, 'seoul_city_complaints_2019_2021.csv')
-
+en = '''Edgar Allan Poe's C. Auguste Dupin is generally acknowledged as the first detective in fiction and served as the
+ prototype for many later characters, including Holmes.[7] Conan Doyle once wrote, "Each [of Poe's detective stories] is
+  a root from which a whole literature has developed... Where was the detective story until Poe breathed the breath of 
+  life into it?"[8] Similarly, the stories of Émile Gaboriau's Monsieur Lecoq were extremely popular at the time Conan 
+  Doyle began writing Holmes, and Holmes's speech and behaviour sometimes follow that of Lecoq.[9][10] Doyle has his 
+  main characters discuss these literary antecedents near the beginning of A Study in Scarlet, which is set soon after 
+  Watson is first introduced to Holmes. Watson attempts to compliment Holmes by comparing him to Dupin, to which Holmes 
+  replies that he found Dupin to be "a very inferior fellow" and Lecoq to be "a miserable bungler".[11]'''
 p = PreProcessor([
     ('tokenize', TokenizerEN())
     ])
 a = TokenizerEN()
 
-# print(f'{type(p)}: {isinstance(p, object)}')
-# print(f'{type(corpus)}: {isinstance(corpus, type)}')
-# print(f'{type(tt)}: {isinstance(tt, type)}')
-print(p.preprocessing())
+out_rst = a(en)
+print(f'outside : sentence => {len(out_rst)} \n{out_rst}\n')
+
+in_rst = p.preprocessing(corpus['ask'])
+print(f'inside : sentence => {len(in_rst)} \n{in_rst}\n')
