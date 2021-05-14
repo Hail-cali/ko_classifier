@@ -2,10 +2,11 @@ import numpy as np
 import nltk.tokenize
 import pandas as pd
 import csv
+import re
 
 
-
-file_path = '/Users/george/testData/'
+FILE_PATH = '/Users/george/testData/'
+STOPWORD_PATH = '../../TextMining_study/stopwords/stopword_seoul.txt'
 
 def textReader(file_path, filename):
     corpus = []
@@ -25,7 +26,6 @@ class PreProcessor(object):
         self.step = step
 
     def preprocessing(self, corpus):
-        result = []
         check = {}
         if isinstance(corpus, list):
             self.corpus = corpus
@@ -39,7 +39,7 @@ class PreProcessor(object):
                 # for docs in self.corpus:
                 #     result.append(step[1](docs))
                 self.corpus = [step[1](docs) for docs in self.corpus]
-
+                check[step[0]] = True
 
             else:
                 check[step[0]] = False
@@ -56,14 +56,18 @@ class Tokenizer(object):
 
 class PosTaging(object):
 
-    def __init__(self, name='komoran', stop_pos=('NN*'), mecab_path='/usr/local/lib/mecab/dic/mecab-ko-dic'):
+    def __init__(self, name='komoran', stop_pos=['NN*'], mecab_path='/usr/local/lib/mecab/dic/mecab-ko-dic'):
         import konlpy.tag
-        import re
-        self.stoppos = []
+        pos_str = ''
         for pos in stop_pos:
             if pos.endswith('*'):
-                #re.compile()
-                pass
+                pos_str += '|%s' % pos
+            else:
+                pos_str += '|%s' % pos
+
+        pos_str = f'[%s]' % pos_str[1:]
+        #print(f'pos_str : {pos_str}')
+        self.stoppos = re.compile(pos_str)
 
         if name =='komoran':
             self.postag = konlpy.tag.Komoran()
@@ -76,18 +80,28 @@ class PosTaging(object):
 
     def __call__(self, *args):
         try:
-            print(len(args[0]))
-
+            #print(len(args[0]))
             result = list(self.postag.pos(docs)[0] for docs in args[0])
-            #result = [pos for pos in result if pos[1] in self.stoppos]
+            if isinstance(self.stoppos, object):
+                pass
+            result = [pos for pos in result if self.stoppos.match(pos[1])]
             return result
         except:
             return []
+class StopWordsFilter(object):
+
+    def __init__(self, stopword_path='../stopwords/mystopwords.txt'):
+        self.stopword = [line.strip() for line in open(stopword_path, 'r', encoding='utf-8')]
+
+    def __call__(self, corpus=None):
+
+        return corpus
 
 corpus = pd.read_csv('/Users/george/testData/seoul_city_complaints_2019_2021.csv')
 print(corpus['ask'][150])
 print('-'*30)
-tt = textReader(file_path, 'seoul_city_complaints_2019_2021.csv')
+
+#tt = textReader(FILE_PATH, 'seoul_city_complaints_2019_2021.csv')
 
 en = '''Edgar Allan Poe's C. Auguste Dupin is generally acknowledged as the first detective in fiction and served as the
  prototype for many later characters, including Holmes.[7] Conan Doyle once wrote, "Each [of Poe's detective stories] is
@@ -98,15 +112,16 @@ en = '''Edgar Allan Poe's C. Auguste Dupin is generally acknowledged as the firs
   Watson is first introduced to Holmes. Watson attempts to compliment Holmes by comparing him to Dupin, to which Holmes 
   replies that he found Dupin to be "a very inferior fellow" and Lecoq to be "a miserable bungler".[11]'''
 
+#corpus pipeline start
 pipeline = PreProcessor([
     ('tokenize', Tokenizer()),
-    ('posfillter', PosTaging(name='mecab'))
+    ('postag', PosTaging(name='mecab')),
+    ('stopwords', StopWordsFilter(stopword_path=STOPWORD_PATH))
     ])
-a = Tokenizer()
+# a = Tokenizer()
+# out_rst = a(en)
+# print(f'outside : sentence => {len(out_rst)} \n{out_rst}\n')
 
-out_rst = a(en)
-print(f'outside : sentence => {len(out_rst)} \n{out_rst}\n')
-
-in_rst = pipeline.preprocessing(corpus['ask'][1:3])
-print(f'inside : sentence => {len(in_rst)} \n{in_rst}\n')
+in_rst = pipeline.preprocessing(corpus['ask'][150:152])
+print(f'inside : docs => {len(in_rst)} \n{in_rst}\n')
 
