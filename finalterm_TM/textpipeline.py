@@ -2,7 +2,9 @@ import nltk.tokenize
 import csv
 import re
 import math
-
+import os
+from multiprocessing import Pool
+from contextlib import contextmanager
 class BaseProcessor:
     IN_TYPE = [list]
     OUT_TYPE = [list, tuple]
@@ -47,6 +49,44 @@ class PreProcessor(object):
         print(check)
         return self.corpus
 
+
+    def mpprocessing(self, corpus, work_num=4):
+        """
+        before running
+        warp main code with __name__== '__main__'
+        """
+        check = {}
+        if isinstance(corpus, list):
+            self.corpus = corpus
+        elif isinstance(corpus, str):
+            self.corpus = [corpus]
+        else:
+            self.corpus = [d for d in corpus]
+        print(f'work_num : {work_num}')
+        q = []
+        with Pool(work_num) as p:
+            q.append(p.map(self.worker, self.corpus))
+        # with self.manager(processes=3) as p:
+        #     p.map(self.worker, self.corpus)
+        self.corpus = q[0]
+
+        return self.corpus
+
+    @contextmanager
+    def manager(self, *args, q):
+        pool = Pool(*args, q)
+        yield pool
+        pool.terminate()
+
+    def worker(self, corpus):
+        data = corpus
+        for inst in self.step:
+            data = inst[1](data)
+        return data
+
+
+
+
 class Tokenizer(object):
 
     def __call__(self, corpus=None):
@@ -76,7 +116,6 @@ class PosTaging(object):
             except:
                 print(f'check mecab path: {mecab_path}')
 
-
     def __call__(self, *args):
         try:
             #print(len(args[0]))
@@ -87,6 +126,7 @@ class PosTaging(object):
             return result
         except:
             return []
+
 class StopWordsFilter(object):
 
     def __init__(self, stopword_path='../stopwords/mystopwords.txt'):
@@ -100,6 +140,7 @@ class StopWordsFilter(object):
         for docs in args:
             result.extend([word for word in docs if word[0] not in self.stopword])
         return result
+
 class Selector(object):
     def __init__(self, word=False):
         self.flattend = word
@@ -126,7 +167,6 @@ class TextImputer(object):
         self.freq = 1
         pass
 
-
     @property
     def freq(self, val):
         self._freq = val
@@ -138,16 +178,26 @@ class TextImputer(object):
 class Stemmer(object):
     pass
 
-class Lemmatizer(object):
+class myLemmatizer(object):
 
-    pass
+    def __init__(self):
+        from soylemma import Lemmatizer
+
+        self.inst = Lemmatizer()
+
+    def __call__(self, *args):
+        for word in args[0]:
+            temp = self.inst.lemmatize(word[0])
+            print(temp)
+        return
 
 
 
 
 def textReader(file_path, filename):
     corpus = []
-    with open(file_path + filename, newline='', encoding='utf-8') as file:
+    file = os.path.join(file_path, filename)
+    with open(file, newline='', encoding='utf-8') as file:
         reader = csv.reader(file, delimiter=',')
         next(reader)
         for idx, sample in enumerate(reader):
