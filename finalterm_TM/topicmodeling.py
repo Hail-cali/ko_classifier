@@ -17,10 +17,9 @@ class TopicModeling(object):
         self._X = None
         self.topic = dict(map(lambda x: (x+1, []), range(k)))
         self.word_allcated = {}
-        self._vocabulary = []
-        self.positions = []
+        self.vocabulary_ = []
+        self._positions = None
         self.candidates = []
-        self.result = []
 
     def __call__(self):
         print('call')
@@ -28,52 +27,50 @@ class TopicModeling(object):
     def fit(self, X):
         self._candidate(X)
         self._random_allocate_topic()
-        result = self.distribution_topicBYdoc()
-        return result
+        self._make_positions(X)
+        t2d = self.distribution_topicBYdoc()
+
+        return t2d
 
     def transform(self):
         pass
 
-    def make_vocabulary(self, corpus):
-
-       pass
-
-
-
     def _candidate(self, corpus):
-
         voca_candi = []
         for doc in corpus:
             voca_candi.extend([d[0] for d in doc])
         self.candidates = list(set(voca_candi))
 
-
-
-        for doc in corpus:
-            a = list(set(map(lambda x: x[0], doc)))
-            self.result.append(a)
-
-
     def _random_allocate_topic(self):
         for word in self.candidates:
             self.word_allcated[word] = np.random.randint(1, self.k+1)
 
-
-
-        for doc in self.result:
-            self.positions.append(np.random.randint(1, self.k+1, size=len(doc)))
-
+    def _make_positions(self, corpus):
+        positions = []
+        for doc in corpus:
+            positions.append([self.word_allcated[word[0]] for word, _ in Counter(doc).items()])
+        self._positions = np.array(positions, dtype=object)
 
     def distribution_topicBYdoc(self):
-        topicBYdoc = []
+        distributions = []
+        for doc in self._positions:
+            defalut_counter = defaultdict(lambda: self.a)
+            for i in range(self.k):
+                defalut_counter[i+1]
 
+            defalut_counter.update(dict((k, v+self.a) for k, v in Counter(doc).items()))
+            distributions.append(list(defalut_counter.values()))
 
+        t2d = np.array(distributions)
+        return t2d
 
-        topicBydoc = []
-        for word_topic in self.positions:
-            topicBydoc.append([count +self.a for _, count in sorted(Counter(word_topic).items(), key= lambda x: x[0])])
+    def distribution_topicBYword(self):
 
-        return topicBydoc
+        return
+
+    def _make_vocabulary(self, corpus):
+
+       pass
 
     def _svm(self):
         pass
@@ -108,9 +105,3 @@ if __name__ =='__main__':
 
     candi = c.fit(documents)
     print(f'{type(candi)} {len(candi)}')
-    print(f'{type(candi[1])} {len(candi[1])}')
-    print(f'{candi[1]}')
-    temp = c.positions
-    print(f'{type(Counter(temp[1]))} {Counter(temp[1])}')
-    print([count+0.01 for _, count in sorted(Counter(temp[1]).items(), key= lambda x: x[0])])
-    print(c.word_allcated)

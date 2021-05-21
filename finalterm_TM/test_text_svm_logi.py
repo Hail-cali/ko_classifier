@@ -92,8 +92,8 @@ if __name__ == '__main__':
     vocablist = [word for word, _ in sorted(tfidf_vectorizer.vocabulary_.items(), key=lambda x:x[1], reverse=True)]
 
     # imbalance data sampling using SMOTE
-    sm = SMOTE(ratio='auto', kind='regular')
-    X_resampled, y_resampled = sm.fit_sample(X_train_v, y_train)
+    sm = SMOTE(random_state=0) # 10, l2, sag => 0.78
+    X_resampled, y_resampled = sm.fit_resample(X_train_v, y_train)
 
     text_logi = LogisticRegression() # 0.2 l2, saga => 0.90
     param = {'C': [0.1, 0.2, 1, 2, 10], 'penalty': ['l2'], 'solver': ['saga', 'sag']}
@@ -143,5 +143,5 @@ if __name__ == '__main__':
     plt.xlabel('False Positive Rate')
     plt.ylabel('True Positive Rate')
     plt.legend(loc='best')
-    plt.savefig('ML_HW2roc_imbalace.png',dpi=300)
+    plt.savefig('ML_HW2roc_2.png', dpi=300)
     plt.show()
