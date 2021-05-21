@@ -84,9 +84,6 @@ class PreProcessor(object):
             data = inst[1](data)
         return data
 
-
-
-
 class Tokenizer(object):
 
     def __call__(self, corpus=None):
@@ -108,13 +105,15 @@ class PosTaging(object):
         #print(f'pos_str : {pos_str}')
         self.stoppos = re.compile(pos_str)
 
-        if name =='komoran':
+        if name == 'komoran':
             self.postag = konlpy.tag.Komoran()
-        elif name =='mecab':
+        elif name == 'mecab':
             try:
                 self.postag = konlpy.tag.Mecab(dicpath=mecab_path)
             except:
                 print(f'check mecab path: {mecab_path}')
+        elif name == 'okt':
+            self.postag = konlpy.tag.Okt()
 
     def __call__(self, *args):
         try:
@@ -186,12 +185,30 @@ class myLemmatizer(object):
         self.inst = Lemmatizer()
 
     def __call__(self, *args):
+        docs = []
+
         for word in args[0]:
-            temp = self.inst.lemmatize(word[0])
-            print(temp)
-        return
+
+            if not re.findall(r'[NN*]', word[1]):
+                lem = self.inst.lemmatize(word[0])
+                print(f'raw {word}')
+                # if re.findall(r'[V*]', lem[1]):
+                #     docs.append(lem)
+                print(f'candidate{lem}')
+                docs.append(lem[0])
+            else:
+                docs.append(word)
+        #print(docs)
+        return docs
+
+class Ngram(Tokenizer):
+
+    def __init__(self, N):
+        super().__init__()
+        self.N = N
 
 
+    pass
 
 
 def textReader(file_path, filename):

@@ -23,14 +23,14 @@ if __name__ == '__main__':
       replies that he found Dupin to be "a very inferior fellow" and Lecoq to be "a miserable bungler".[11]'''
 
     #corpus pipeline start
+    # a = Tokenizer()
     pipeline = tpp.PreProcessor([
         ('tokenize', tpp.Tokenizer()),
-        ('postag', tpp.PosTaging(name='mecab', stop_pos=['NN*','V*'])),
+        ('postag', tpp.PosTaging(name='mecab', stop_pos=['NN*', 'VV*'])),
         #('lemmatizer', tpp.myLemmatizer()),
         ('stopwords', tpp.StopWordsFilter(stopword_path=STOPWORD_PATH)),
         ('selectword', tpp.Selector(word=True))
         ])
-    # a = Tokenizer()
     # out_rst = a(en)
     # print(f'outside : sentence => {len(out_rst)} \n{out_rst}\n')
 
@@ -38,15 +38,14 @@ if __name__ == '__main__':
     documents = pipeline.preprocessing(corpus['ask'])
     print(f'single processs\t{time.time()-start:.3f} time..')
     #print(f'inside : docs => {len(documents)} \n{documents}\n')
+    #print(documents)
 
-    start2 = time.time()
-    documents_mp = pipeline.mpprocessing(corpus['ask'], 4)
-    end2 = time.time()
-    print(f'multi process\t{end2-start2:.3f}')
-
-
+    # start2 = time.time()
+    # documents_mp = pipeline.mpprocessing(corpus['ask'], 4)
+    # end2 = time.time()
+    # print(f'multi process\t{end2-start2:.3f}')
 
     tf_idf_vectorizer = TfidfVectorizer()
-    X = tf_idf_vectorizer.fit_transform(documents_mp)
+    X = tf_idf_vectorizer.fit_transform(documents)
     print(X)
 
