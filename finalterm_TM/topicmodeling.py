@@ -15,11 +15,14 @@ class TopicModeling(object):
         self.b = b # 문서 내 단어들의 토픽 분포를 얼마나 밀집되게 할 것인지
         self.k = k #몇개의 토픽으로 구성할 건지
         self._X = None
-        self.topic = dict(map(lambda x: (x+1, []), range(k)))
-        self.word_allcated = {}
+        #self.topic = dict(map(lambda x: (x+1, []), range(k)))
+        #self.word_allcated = {}
+        self.word_allcated = defaultdict()
         self.vocabulary_ = []
         self._positions = None
         self.candidates = []
+        self.t2d = None
+        self.t2w = None
 
     def __call__(self):
         print('call')
@@ -28,9 +31,10 @@ class TopicModeling(object):
         self._candidate(X)
         self._random_allocate_topic()
         self._make_positions(X)
-        t2d = self.distribution_topicBYdoc()
-
-        return t2d
+        self.distribution_topicBYdoc()
+        self.distribution_topicBYword()
+        self.allocate_topic()
+        return self.t2w
 
     def transform(self):
         pass
@@ -62,11 +66,23 @@ class TopicModeling(object):
             distributions.append(list(defalut_counter.values()))
 
         t2d = np.array(distributions)
-        return t2d
+        self.t2d = np.transpose(t2d)
+        return
 
     def distribution_topicBYword(self):
-
+        distributions = []
+        row = [(word, val) for word, val in self.word_allcated.items()]
+        for topic in range(self.k):
+            distributions.append([word[1] + self.b if word[1]==(topic+1) else self.b for word in row])
+        t2w = np.array(distributions)
+        self.t2w = t2w
         return
+
+    def allocate_topic(self):
+        for word in self.word_allcated.keys():
+            self.word_allcated[word] = 0
+            a1 = self.t2d[0,0]/(self.t2d[:,0]).sum()
+            self.t2w[0,:]
 
     def _make_vocabulary(self, corpus):
 
@@ -103,5 +119,8 @@ if __name__ =='__main__':
     documents = pipeline.mpprocessing(df['ask'])
     print(f'multi processs\t{time.time() - start:.3f} time..')
 
-    candi = c.fit(documents)
+    c.fit(documents)
+    candi = c.t2d
     print(f'{type(candi)} {len(candi)}')
+    print(candi.shape)
+    print(candi[1,:5])
