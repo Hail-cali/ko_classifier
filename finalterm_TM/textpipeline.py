@@ -5,6 +5,8 @@ import math
 import os
 from multiprocessing import Pool
 from contextlib import contextmanager
+import pandas as pd
+
 class BaseProcessor:
     IN_TYPE = [list]
     OUT_TYPE = [list, tuple]
@@ -141,8 +143,8 @@ class StopWordsFilter(object):
         return result
 
 class Selector(object):
-    def __init__(self, word=False):
-        self.flattend = word
+    def __init__(self, flat=False):
+        self.flattend = flat
 
     def __call__(self, corpus=None):
         if self.flattend:
@@ -211,14 +213,50 @@ class Ngram(Tokenizer):
     pass
 
 
-def textReader(file_path, filename):
-    corpus = []
-    file = os.path.join(file_path, filename)
-    with open(file, newline='', encoding='utf-8') as file:
-        reader = csv.reader(file, delimiter=',')
-        next(reader)
-        for idx, sample in enumerate(reader):
+# def textReader(file_path, filename):
+#     corpus = []
+#     file = os.path.join(file_path, filename)
+#     with open(file, newline='', encoding='utf-8') as file:
+#         reader = csv.reader(file, delimiter=',')
+#         next(reader)
+#         for idx, sample in enumerate(reader):
+#
+#             corpus.append([idx]+sample[1:])
+#
+#         return corpus
 
-            corpus.append([idx]+sample[1:])
+class TextReader():
 
-        return corpus
+    def __init__(self, file, doc_index=2, meta_index=1, delimiter=','):
+        self.pair_map = {}
+        array = []
+        id = 0
+        pair_map = {}
+        with open(file, encoding='utf-8') as ins:
+            reader = csv.reader(ins)
+            next(reader)
+
+            for fields in reader:
+                try:
+                    if len(fields[doc_index]) > 35:
+
+                        array.append(fields[doc_index])
+                        pair_map[id] = fields[meta_index][:4]
+
+                        id += 1
+                except IndexError:
+                    print("out of index " + str(id))
+
+        self.docs = array
+        self.pair_map = pair_map
+
+    def _categorizer(self):
+        self.pair_map
+
+        return
+
+    def __iter__(self):
+        return self.docs.__iter__()
+
+    def __len__(self):
+        return self.docs.__len__()
