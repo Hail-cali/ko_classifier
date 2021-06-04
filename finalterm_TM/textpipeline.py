@@ -227,7 +227,7 @@ class Ngram(Tokenizer):
 
 class TextReader():
 
-    def __init__(self, file, doc_index=2, meta_index=1, delimiter=','):
+    def __init__(self, file, doc_index=(2), meta_index=1, delimiter=','):
         self.pair_map = {}
         array = []
         id = 0
@@ -238,12 +238,10 @@ class TextReader():
 
             for fields in reader:
                 try:
-                    if len(fields[doc_index]) > 35:
+                    array.append(' '.join([fields[i] for i in doc_index]))
+                    pair_map[id] = fields[meta_index][:4]
 
-                        array.append(fields[doc_index])
-                        pair_map[id] = fields[meta_index][:4]
-
-                        id += 1
+                    id += 1
                 except IndexError:
                     print("out of index " + str(id))
 
