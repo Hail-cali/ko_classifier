@@ -1,13 +1,11 @@
-import textpipeline as tpp
+from pipeline import textpipeline as tpp
 import pandas as pd
 import numpy as np
 import time
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, classification_report
-from operator import itemgetter
 from sklearn.model_selection import GridSearchCV
 from imblearn.over_sampling import SMOTE
 

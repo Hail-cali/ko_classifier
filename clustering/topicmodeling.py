@@ -1,5 +1,5 @@
 import numpy as np
-import textpipeline as tpp
+from pipeline import textpipeline as tpp
 import pandas as pd
 import time
 from collections import defaultdict

@@ -1,4 +1,4 @@
-import textpipeline as tpp
+from pipeline import textpipeline as tpp
 import pandas as pd
 import time
 

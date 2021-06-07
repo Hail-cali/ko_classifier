@@ -1,10 +1,8 @@
-import textpipeline as tpp
+from pipeline import textpipeline as tpp
 import pandas as pd
-import numpy as np
 import time
-from numpy.linalg import svd
 from sklearn.decomposition import TruncatedSVD
-from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
+from sklearn.feature_extraction.text import CountVectorizer
 
 FILE_PATH = '/Users/george/testData/seoul_data/dml_seoul_city_complaints_2020_2021.csv'
 #STOPWORD_PATH = '../../TextMining_study/stopwords/stopword_seoul.txt'
