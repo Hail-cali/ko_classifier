@@ -1,7 +1,7 @@
 import pandas as pd
 import csv
 import os
-
+from datetime import datetime
 file_name = '/Users/george/testData/seoul_data/dml_seoul_city_complaints_2020_2021.csv'
 
 output_file = 'dml_seoul_city_complaints_2020_2021.csv'
@@ -30,18 +30,23 @@ for i in os.listdir(file)[1:]:
     data_path = os.path.join(file, i)
     data = pd.read_csv(data_path)
     print(data.info())
-    c= 0
+
+    c = 0
     for idx, j in enumerate(data['answers']):
         if len(str(j)) < 10:
             print(data.loc[idx,:])
             c += 1
     print()
-    print(c)
+    print(f'file num {i[-9:-4]} count Nan {c}')
     f.append(data)
 
 df = pd.concat(f, axis=0)
-print(df.info())
 print(df['answers'][8634:])
+df['date'] =df['date'].astype('str')
 
-#df.to_csv('seoul_city_complaints_total.csv', index=False, encoding='utf-8')
+df['date'].apply(lambda _ : datetime.strptime(_,'%Y.%m'))
+df = df.sort_values(by='date').reset_index()
+print(df.info())
+
+#df.to_csv('seoul_city_complaints_total_2.csv', index=False, encoding='utf-8')
 
