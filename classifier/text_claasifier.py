@@ -9,6 +9,7 @@ class BaseClassifer:
     def transform(self):
         pass
 
+
 class TextClassifier(object):
 
     def __init__(self):
