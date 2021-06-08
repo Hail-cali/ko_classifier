@@ -45,7 +45,10 @@ if __name__ == '__main__':
         label = 'LDA'
         lda_model_name = './test.lda.bin'
         mdl=topic_model.lda_model(text_data, lda_model_name, topic_number)
+        print(type(mdl.doc))
         print('perplexity score ' + str(mdl.perplexity))
+
+        labeled_data = []
 
     elif mode == 'dmr':
         print('Running DMR')
@@ -61,7 +64,8 @@ if __name__ == '__main__':
 
         mdl.load(model_name)
 
-        v_file_name = FILE_PATH[-9:-4]
+        v_file_name = FILE_PATH[-11:-6]
         visualization_file='../topic_visualization_' + v_file_name + str(topic_number) + '.html'
-
-        topic_model.make_pyLDAVis(mdl, visualization_file=visualization_file)
+        fff = 'topic_visualization_total.html'
+        #topic_model.make_pyLDAVis(mdl, visualization_file=visualization_file)
+        topic_model.make_pyLDAVis(mdl, visualization_file=fff)

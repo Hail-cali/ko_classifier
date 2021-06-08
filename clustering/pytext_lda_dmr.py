@@ -130,14 +130,13 @@ class pyTextMinerTopicModel:
             topic_ct = []
             print(f'== Topic # {k}')
             print("Labels:", ', '.join(label for label, score in labeler.get_topic_labels(k, top_n=5)))
-            for word, prob in mdl.get_topic_words(k, top_n=10):
+            for word, prob in mdl.get_topic_words(k, top_n=20):
                 print(word, prob, sep='\t')
                 topic_ct.append([word, prob])
             print()
             topic_contents.append(topic_ct)
         df_topic = pd.DataFrame(topic_contents)
-        print('df_topic')
-        print(df_topic)
+        df_topic.to_csv('dmr_topic_feature.csv', sep=',', encoding='utf-8')
 
         # Init output
         topics_features = pd.DataFrame()
@@ -179,7 +178,7 @@ class pyTextMinerTopicModel:
         #col_features.insert(0,'Topic ID')
         topics_features.columns = col_features
 
-        #topics_features.to_csv('dmr_topic_year.csv', sep=',', encoding='utf-8')
+        topics_features.to_csv('dmr_topic_year.csv', sep=',', encoding='utf-8')
         print(topics_features.head(20))
 
         # calculate topic distribution for each metadata using softmax
