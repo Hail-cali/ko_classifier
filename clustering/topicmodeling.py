@@ -106,17 +106,17 @@ if __name__ =='__main__':
 
     c = TopicModeling()
 
-    df = pd.read_csv('~/testData/seoul_city_complaints_2019_2021.csv')
+    df = pd.read_csv('/Users/george/testData/seoul_data/dml_seoul_city_complaints_2020_2021.csv')
 
     pipeline = tpp.PreProcessor([
         ('tokenize', tpp.Tokenizer()),
         ('postag', tpp.PosTaging(name='mecab', stop_pos=['NN*'])),
         ('stopwords', tpp.StopWordsFilter(stopword_path=STOPWORD_PATH)),
-        #('selectword', tpp.Selector(word=True))
+        #('selectword', tpp.Selector(flat=True))
     ])
 
     start = time.time()
-    documents = pipeline.mpprocessing(df['ask'])
+    documents = pipeline.mpprocessing(df['complaints'], 5)
     print(f'multi processs\t{time.time() - start:.3f} time..')
 
     c.fit(documents)
