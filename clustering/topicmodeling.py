@@ -4,6 +4,7 @@ import pandas as pd
 import time
 from collections import defaultdict
 from collections import Counter
+
 class BaseLDA:
     IN_TYPE = [list, tuple]
     OUT_TYPE = [list, str]
@@ -13,12 +14,12 @@ class TopicModeling(object):
     def __init__(self, a=0.01, b=0.001, k=5):
         self.a = a # 문서들의 토픽 분포를 얼마나 밀집되게 할 것인지
         self.b = b # 문서 내 단어들의 토픽 분포를 얼마나 밀집되게 할 것인지
-        self.k = k #몇개의 토픽으로 구성할 건지
+        self.k = k # 몇개의 토픽으로 구성할 건지
         self._X = None
         #self.topic = dict(map(lambda x: (x+1, []), range(k)))
         #self.word_allcated = {}
         self.word_allcated = defaultdict()
-        self.vocabulary_ = []
+        self.vocabulary_ = defaultdict()
         self._positions = None
         self.candidates = []
         self.t2d = None
@@ -43,11 +44,17 @@ class TopicModeling(object):
         voca_candi = []
         for doc in corpus:
             voca_candi.extend([d[0] for d in doc])
-        self.candidates = list(set(voca_candi))
+        voca = set(voca_candi)
+        self.vocabulary_ = dict(zip(range(len(voca)), voca))
+        self.candidates = list(voca)
 
     def _random_allocate_topic(self):
+
         for word in self.candidates:
             self.word_allcated[word] = np.random.randint(1, self.k+1)
+
+        # for idx in self.vocabulary_.keys():
+        #     self.word_allcated[idx] = np.random.randint(1, self.k+1)
 
     def _make_positions(self, corpus):
         positions = []
@@ -88,6 +95,15 @@ class TopicModeling(object):
 
        pass
 
+    def gibbs(self):
+        iter = 1000
+
+        for i in range(1, iter, 10):
+
+            pass
+
+
+
     def _svm(self):
         pass
 
@@ -124,3 +140,5 @@ if __name__ =='__main__':
     print(f'{type(candi)} {len(candi)}')
     print(candi.shape)
     print(candi[1,:5])
+    print(c.t2w.shape)
+    #print(c._positions)
