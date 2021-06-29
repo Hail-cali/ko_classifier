@@ -4,10 +4,26 @@ import pandas as pd
 import time
 from collections import defaultdict
 from collections import Counter
+from itertools import permutations
 
 class BaseLDA:
     IN_TYPE = [list, tuple]
     OUT_TYPE = [list, str]
+
+class LDA(object):
+
+    def __init__(self, a=0.01, b=0.001, k=5):
+        self.a = a
+        self.b = b
+        self.k = k
+
+    def fit(self):
+
+        pass
+
+
+
+
 
 class TopicModeling(object):
 
@@ -88,32 +104,31 @@ class TopicModeling(object):
     def allocate_topic(self):
         for word in self.word_allcated.keys():
             self.word_allcated[word] = 0
-            a1 = self.t2d[0,0]/(self.t2d[:,0]).sum()
-            self.t2w[0,:]
+            a1 = self.t2d[0, 0]/(self.t2d[:, 0]).sum()
+            self.t2w[0, :]
 
     def _make_vocabulary(self, corpus):
 
        pass
 
     def gibbs(self):
-        iter = 1000
+        iter = 1500
 
-        for i in range(1, iter, 10):
-
-            pass
-
+        for i in range(1, iter, 100):
+            sample = np.random.choice(list(self.vocabulary_.keys()), 100)
+            print(sample)
 
 
     def _svm(self):
         pass
 
-    @property
-    def X(self, *args):
-        self._X = args
+        @property
+        def X(self, *args):
+            self._X = args
 
-    @X.getter
-    def X(self):
-        return self._X
+        @X.getter
+        def X(self):
+            return self._X
 
 FILE_PATH = '/Users/george/testData/'
 STOPWORD_PATH = '../../TextMining_study/stopwords/stopword_seoul.txt'
@@ -135,10 +150,15 @@ if __name__ =='__main__':
     documents = pipeline.mpprocessing(df['complaints'], 5)
     print(f'multi processs\t{time.time() - start:.3f} time..')
 
-    c.fit(documents)
-    candi = c.t2d
-    print(f'{type(candi)} {len(candi)}')
-    print(candi.shape)
-    print(candi[1,:5])
-    print(c.t2w.shape)
-    #print(c._positions)
+    # c.fit(documents)
+    # candi = c.t2d
+    # print(f'{type(candi)} {len(candi)}')
+    # print(candi.shape)
+    # print(candi[1,:5])
+    # print(c.t2w.shape)
+    # #print(c._positions)
+    # c.gibbs()
+
+
+    model = LDA()
+    model.fit()
