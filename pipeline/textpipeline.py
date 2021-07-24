@@ -32,6 +32,8 @@ class PreProcessor(object):
         check = {}
         if isinstance(corpus, list):
             self.corpus = corpus
+        elif isinstance(corpus, pd.core.series.Series):
+            self.corpus = list(corpus)
         elif isinstance(corpus, str):
             self.corpus = [corpus]
         else:
@@ -60,16 +62,19 @@ class PreProcessor(object):
         check = {}
         if isinstance(corpus, list):
             self.corpus = corpus
+        elif isinstance(corpus, pd.core.series.Series):
+            self.corpus = list(corpus)
         elif isinstance(corpus, str):
             self.corpus = [corpus]
-        elif isinstance(corpus, object):
-            self.corpus = list(corpus)
         else:
             self.corpus = [d for d in corpus]
+
+        #print(type(self.corpus))
         print(f'work_num : {work_num}')
         q = []
         with Pool(work_num) as p:
             q.append(p.map(self.worker, self.corpus))
+
         # with self.manager(processes=3) as p:
         #     p.map(self.worker, self.corpus)
         self.corpus = q[0]
