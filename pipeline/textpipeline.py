@@ -62,6 +62,8 @@ class PreProcessor(object):
             self.corpus = corpus
         elif isinstance(corpus, str):
             self.corpus = [corpus]
+        elif isinstance(corpus, object):
+            self.corpus = list(corpus)
         else:
             self.corpus = [d for d in corpus]
         print(f'work_num : {work_num}')
