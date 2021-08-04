@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import time
 from functools import reduce
+from collections import OrderedDict
 from pipeline import textpipeline as tpp
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -20,19 +21,22 @@ class BaseClassifer:
 
 
 class TextClassifier(object):
+
     """
     input :param :
-
     """
-    def __init__(self):
-        self.norm = None
+
+    def __init__(self, h=10):
         self.adj_matrix = None
-        self.vocabulary = None
+
+        self.vocabulary = OrderedDict()
+        self.embed_mat = list()
+        self.h = h
 
     def fit(self, X):
-        print([' '.split(doc) for doc in X])
-        ds = [' '.split(doc) for doc in X]
-        self.norm = reduce(lambda l1, l2: l1 + l2, ds)
+
+        self.make_vocabulary(X)
+        self.embedding(X)
 
     def predict(self):
         pass
@@ -40,11 +44,29 @@ class TextClassifier(object):
     def coef_(self):
         pass
 
-    def trucksvd(self):
-
+    def truckedsvd(self):
 
         pass
 
+    def make_vocabulary(self, X):
+        norm = set(' '.join(X).split())
+        self.vocabulary = OrderedDict(zip(norm, range(1, len(norm)+1)))
+        self.vocabulary[''] = 0
+        print(f'model voca: \n {self.vocabulary}')
+
+    def bagword(self):
+        pass
+
+    def embedding(self, X):
+        for terms in X:
+            self.embed_mat.append(self.padding([self.vocabulary[term] for term in terms.split()]))
+
+
+    def padding(self, embed):
+        if len(embed) < self.h:
+            return embed.extend(np.zeros(self.h-len(embed)))
+        else:
+            return embed
 
 if __name__ == "__main__":
 
@@ -72,7 +94,7 @@ if __name__ == "__main__":
     print(type(train_X))
     pipeline = tpp.PreProcessor([
         ('tokenize', tpp.Tokenizer()),
-        ('postag', tpp.PosTaging(name='mecab', stop_pos=['NN*','VV*'])),
+        ('postag', tpp.PosTaging(name='mecab', stop_pos=['NN*'])),
         ('stopwords', tpp.StopWordsFilter(stopword_path=STOPWORD_PATH)),
         ('selectword', tpp.Selector(flat=True))
     ])
@@ -83,10 +105,10 @@ if __name__ == "__main__":
     print(f'multi processs\t{time.time() - start:.3f} time..')
 
     print(documents)
-    model = TextClassifier()
+    model = TextClassifier(h=10)
     model.fit(documents)
 
-    print(model.norm)
+    print(model.embed_mat)
 
 
 
