@@ -35,7 +35,7 @@ if __name__ == '__main__':
     print(f'corpus: {len(corpus)}')
     for idx, review in enumerate(corpus['review']):
         if not isinstance(review, str):
-            corpus.drop([idx],inplace=True)
+            corpus.drop([idx], inplace=True)
     print(f'corpus: {len(corpus)}')
     print(corpus.info())
 
@@ -44,7 +44,7 @@ if __name__ == '__main__':
         ('tokenize', tpp.Tokenizer()),
         ('postag', tpp.PosTaging(name='mecab', stop_pos=['NN*', 'VV*'])),
         ('stopwords', tpp.StopWordsFilter(stopword_path=STOPWORD_PATH)),
-        ('selectword', tpp.Selector(word=True))
+        ('selectword', tpp.Selector(flat=True))
         ])
 
     #processing step
@@ -56,7 +56,7 @@ if __name__ == '__main__':
 
     elif work == 'multi':
         start = time.time()
-        documents = pipeline.mpprocessing(corpus['review'],5)
+        documents = pipeline.mpprocessing(corpus['review'], 5)
         end1 = time.time()
         print(f'multi process {end1-start:.3f}s') #take 56.611s
 

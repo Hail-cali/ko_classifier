@@ -27,17 +27,23 @@ class TextClassifier(object):
     def __init__(self):
         self.norm = None
         self.adj_matrix = None
+        self.vocabulary = None
 
     def fit(self, X):
         print([' '.split(doc) for doc in X])
         ds = [' '.split(doc) for doc in X]
         self.norm = reduce(lambda l1, l2: l1 + l2, ds)
+
     def predict(self):
         pass
 
     def coef_(self):
         pass
 
+    def trucksvd(self):
+
+
+        pass
 
 
 if __name__ == "__main__":
