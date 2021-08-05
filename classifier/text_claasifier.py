@@ -54,7 +54,7 @@ class TextClassifier(object):
         self.vocabulary[''] = 0
         print(f'model voca: \n {self.vocabulary}')
 
-    def bagword(self):
+    def bagofword(self):
         pass
 
     def embedding(self, X):
@@ -64,7 +64,7 @@ class TextClassifier(object):
 
     def padding(self, embed):
         if len(embed) < self.h:
-            return embed.extend(np.zeros(self.h-len(embed)))
+            return embed + list(np.zeros(self.h-len(embed)).astype('int'))
         else:
             return embed
 
